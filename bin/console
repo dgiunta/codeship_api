@@ -6,9 +6,8 @@ require "codeship_api"
 # You can add fixtures and/or initialization code here to make experimenting
 # with your gem easier. You can also use a different console, if you like.
 
-# (If you use this, don't forget to add pry to your Gemfile!)
-# require "pry"
-# Pry.start
+org_uuid = "1fb02010-e93e-0133-b53e-76bef8d7b14f"
+project_uuid = "aa330580-34b6-0133-7099-16e7f2139dbb"
 
-require "irb"
-IRB.start(__FILE__)
+require "pry"
+Pry.start(self)
