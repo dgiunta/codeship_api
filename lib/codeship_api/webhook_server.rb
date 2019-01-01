@@ -6,6 +6,8 @@ module CodeshipApi
     include SuckerPunch::Job
 
     def perform(repo_url, ref)
+      sleep 10
+
       project = CodeshipApi.projects.detect {|proj| proj.repository_url == repo_url }
 
       if project
