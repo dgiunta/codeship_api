@@ -22,7 +22,7 @@ module CodeshipApi
     end
   end
 
-  class GithubWebhookServer < Sinatra::Base
+  class WebhookServer < Sinatra::Base
     configure :production, :development do
       enable :logging
     end
@@ -31,7 +31,7 @@ module CodeshipApi
       erb :homepage
     end
 
-    post '/github_webhook' do
+    post '/github' do
       request.body.rewind
       data = JSON.parse(request.body.read)
 
