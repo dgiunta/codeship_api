@@ -48,19 +48,12 @@ module CodeshipApi
     attr_reader :username, :password
 
     def token
-      if authenticated?
-        authentication.access_token
-      else
-        authenticate!
-      end
+      authenticate unless authenticated?
+      authentication.access_token
     end
 
     def authentication
-      @authentication || authenticate!
-    end
-
-    def authenticate!
-      @authentication = authenticate
+      @authentication || authenticate
     end
 
     def authenticate
@@ -74,9 +67,9 @@ module CodeshipApi
       end
 
       response = http.request request
-
       data = JSON.parse(response.body)
-      Authentication.new(
+
+      @authentication = Authentication.new(
         access_token: data['access_token'],
         expires_at: data['expires_at'],
         organizations: data['organizations']
