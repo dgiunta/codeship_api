@@ -1,11 +1,20 @@
 require "test_helper"
 
-class CodeshipApiTest < Minitest::Test
-  def test_that_it_has_a_version_number
-    refute_nil ::CodeshipApi::VERSION
+describe CodeshipApi do
+  it "has a version number" do
+    CodeshipApi::VERSION.wont_be_nil
   end
 
-  def test_it_does_something_useful
-    assert false
+  it "has a ROOT url" do
+    CodeshipApi::ROOT.must_equal "https://api.codeship.com/v2/"
+  end
+
+  it "has a USERNAME and PASSWORD value based on environment values" do
+    CodeshipApi::USERNAME.must_equal "username"
+    CodeshipApi::PASSWORD.must_equal "password"
+  end
+
+  it "has a client instance" do
+    CodeshipApi.client.class.must_equal CodeshipApi::Client
   end
 end
