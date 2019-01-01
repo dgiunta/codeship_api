@@ -1,3 +1,5 @@
 #!/usr/bin/env ruby
 
-require "codeship_api"
+require "codeship_api/cli"
+
+CodeshipApi::Cli.start(ARGV)

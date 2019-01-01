@@ -1,9 +1,0 @@
-#!/usr/bin/env ruby
-
-require 'codeship_api'
-
-org_uuid = ARGV[0] || ENV.fetch('CODESHIP_API_ORG_UUID')
-project_uuid = ARGV[1] || ENV.fetch('CODESHIP_API_PROJECT_UUID')
-branch = ARGV[2]
-
-puts CodeshipApi.report_excessive_builds(org_uuid, project_uuid, branch)
