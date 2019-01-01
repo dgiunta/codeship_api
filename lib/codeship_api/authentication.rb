@@ -4,14 +4,8 @@ module CodeshipApi
 
     def initialize(access_token:, expires_at:, organizations:)
       @access_token = access_token
-      @expires_at = Time.at(expires_at)
-      @organizations = organizations.map do |org|
-        Organization.new(
-          uuid: org['uuid'],
-          name: org['name'],
-          scopes: org['scopes']
-        )
-      end
+      @expires_at = expires_at
+      @organizations = organizations
     end
 
     def valid?

@@ -71,8 +71,14 @@ module CodeshipApi
 
       @authentication = Authentication.new(
         access_token: data['access_token'],
-        expires_at: data['expires_at'],
-        organizations: data['organizations']
+        expires_at: Time.at(data['expires_at']),
+        organizations: data['organizations'].map do |org|
+          Organization.new(
+            uuid: org['uuid'],
+            name: org['name'],
+            scopes: org['scopes']
+          )
+        end
       )
     end
 
