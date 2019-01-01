@@ -6,7 +6,7 @@ describe CodeshipApi do
   end
 
   it "has a ROOT url" do
-    CodeshipApi::ROOT.must_equal "https://api.codeship.com/v2/"
+    CodeshipApi::ROOT.to_s.must_equal "https://api.codeship.com/v2/"
   end
 
   it "has a USERNAME and PASSWORD value based on environment values" do
