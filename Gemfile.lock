@@ -48,7 +48,7 @@ DEPENDENCIES
   bundler (~> 1.17)
   codeship_api!
   dotenv
-  minitest (~> 5.0)
+  minitest (~> 5.11)
   pry
   rake (~> 10.0)
 
