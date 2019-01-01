@@ -64,13 +64,13 @@ module CodeshipApi
     end
 
     def authenticate
-      uri = URI(ROOT + '/auth')
+      uri = URI(ROOT + 'auth')
 
       request = Net::HTTP::Post.new(uri.request_uri, {
         'Content-Type' => 'application/json',
         'Accept' => 'application/json'
-      }).tap do |request|
-        request.basic_auth(username, password)
+      }).tap do |req|
+        req.basic_auth(username, password)
       end
 
       response = http.request request

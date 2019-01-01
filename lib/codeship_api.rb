@@ -20,31 +20,31 @@ module CodeshipApi
     end
     delegate :organizations, :projects, to: :client
 
-    def excessive_builds(org_uuid, project_uuid, branch=nil)
+    def excessive_builds(org_uuid, project_uuid, target_branch=nil)
       builds = Project.find_by(org_uuid, project_uuid).builds
 
-      if branch
-        builds.select! {|build| build.branch == branch }
+      if target_branch
+        builds.select! {|build| build.branch == target_branch }
       end
 
       builds
         .select(&:testing?)
         .group_by(&:branch)
-        .inject({}) do |out, (branch, builds)|
-          keep, *remove = builds.sort_by(&:queued_at).reverse
+        .inject({}) do |out, (branch, branch_builds)|
+          keep, *remove = branch_builds.sort_by(&:queued_at).reverse
           out[branch] = [keep, remove]
           out
       end
     end
 
-    def stop_excessive_builds(org_uuid, project_uuid, branch=nil)
-      excessive_builds(org_uuid, project_uuid, branch)
+    def stop_excessive_builds(org_uuid, project_uuid, target_branch=nil)
+      excessive_builds(org_uuid, project_uuid, target_branch)
         .flat_map {|branch, (_keep, remove)| remove }
         .each(&:stop)
     end
 
-    def report_excessive_builds(org_uuid, project_uuid, branch=nil)
-      excessive_builds(org_uuid, project_uuid, branch).each do |branch, (keep, remove)|
+    def report_excessive_builds(org_uuid, project_uuid, target_branch=nil)
+      excessive_builds(org_uuid, project_uuid, target_branch).each do |branch, (keep, remove)|
         puts "== Branch: #{branch}"
         puts "++ keep #{keep.uuid} - #{keep.queued_at}"
         remove.each do |build|
