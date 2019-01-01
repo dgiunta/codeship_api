@@ -9,11 +9,14 @@ module CodeshipApi
       project = CodeshipApi.projects.detect {|proj| proj.repository_url == repo_url }
 
       if project
-        builds_to_keep, *builds_to_stop = project.builds
+        build_to_keep, *builds_to_stop = project.builds
           .select {|build| build.testing? && build.ref == ref }
           .sort_by(&:queued_at)
           .reverse
 
+        puts "project: #{project.name}"
+        puts "build_to_keep: #{build_to_keep.uuid}"
+        puts "builds_to_stop: #{builds_to_stop.map(&:uuid).join(", ")}"
         builds_to_stop.each(&:stop)
       end
     end
