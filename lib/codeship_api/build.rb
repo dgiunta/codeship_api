@@ -1,28 +1,28 @@
 module CodeshipApi
-  class Build
-    attr_reader :uuid, :project, :organization, :ref, :commit_sha,
-      :status, :username, :commit_message, :finished_at, :allocated_at,
-      :queued_at, :branch
+  class Build < Base
+    api_attrs :allocated_at, :branch, :commit_message, :commit_sha,
+      :finished_at, :organization_uuid, :project_uuid, :queued_at,
+      :ref, :status, :username, :uuid
 
-    STATES = %w[testing error success stopped]
-    def initialize(uuid:, project:, organization:, ref:, commit_sha:,
-                   status:, username:, commit_message:, finished_at:,
-                   allocated_at:, queued_at:, branch:)
+    parsed_time_attrs :queued_at, :allocated_at, :finished_at
 
-      @uuid, @project, @organization, @ref, @commit_sha,
-        @status, @username, @commit_message, @branch =
-        uuid, project, organization, ref, commit_sha,
-        status, username, commit_message, branch
-
-      @finished_at = Time.parse(finished_at) if finished_at
-      @allocated_at = Time.parse(allocated_at) if allocated_at
-      @queued_at = Time.parse(queued_at) if queued_at
-    end
-
-    STATES.each do |state|
+    STATES = %w[testing error success stopped].each do |state|
       define_method("#{state}?") do
         status == state
       end
+    end
+
+    def self.find_by_project(project, per_page: 50, page: 1)
+      uri = "#{project.uri}/builds?per_page=#{per_page}&page=#{page}"
+      CodeshipApi.client.get(uri)["builds"].map {|build| new(build) }
+    end
+
+    def organization
+      @organization ||= project.organization
+    end
+
+    def project
+      @project ||= Project.find_by(organization_uuid, project_uuid)
     end
 
     def uri
@@ -30,7 +30,7 @@ module CodeshipApi
     end
 
     def stop
-      CodeshipApi.client.post(uri + "/stop")
+      CodeshipApi.client.post(uri + "/stop") if testing?
     end
   end
 end

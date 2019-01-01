@@ -2,6 +2,7 @@ require "active_support/time"
 require "net/http"
 require "json"
 require "codeship_api/version"
+require "codeship_api/base"
 require "codeship_api/organization"
 require "codeship_api/project"
 require "codeship_api/build"
@@ -9,7 +10,7 @@ require "codeship_api/authentication"
 require "codeship_api/client"
 
 module CodeshipApi
-  ROOT = 'https://api.codeship.com/v2/'
+  ROOT = URI('https://api.codeship.com/v2/')
 
   USERNAME = ENV.fetch('CODESHIP_API_USERNAME')
   PASSWORD = ENV.fetch('CODESHIP_API_PASSWORD')

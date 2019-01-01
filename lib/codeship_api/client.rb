@@ -10,29 +10,21 @@ module CodeshipApi
     end
 
     def get(path)
-      uri = URI(ROOT + path.sub(/^\//, ''))
+      uri = URI.join(ROOT, path.sub(/^\//, ""))
 
       request = Net::HTTP::Get.new(uri, default_headers)
       response = http.request(request)
 
-      if response.body.length > 0
-        JSON.parse(response.body)
-      else
-        nil
-      end
+      parsed_json_from(response)
     end
 
     def post(path)
-      uri = URI(ROOT + path.sub(/^\//, ''))
+      uri = URI.join(ROOT, path.sub(/^\//, ""))
 
       request = Net::HTTP::Post.new(uri, default_headers)
       response = http.request(request)
 
-      if response.body.length > 0
-        JSON.parse(response.body)
-      else
-        nil
-      end
+      parsed_json_from(response)
     end
 
     def organizations
@@ -57,7 +49,7 @@ module CodeshipApi
     end
 
     def authenticate
-      uri = URI(ROOT + 'auth')
+      uri = URI.join(ROOT, 'auth')
 
       request = Net::HTTP::Post.new(uri.request_uri, {
         'Content-Type' => 'application/json',
@@ -66,26 +58,14 @@ module CodeshipApi
         req.basic_auth(username, password)
       end
 
-      response = http.request request
-      data = JSON.parse(response.body)
+      response = http.request(request)
 
-      @authentication = Authentication.new(
-        access_token: data['access_token'],
-        expires_at: Time.at(data['expires_at']),
-        organizations: data['organizations'].map do |org|
-          Organization.new(
-            uuid: org['uuid'],
-            name: org['name'],
-            scopes: org['scopes']
-          )
-        end
-      )
+      @authentication = Authentication.new(JSON.parse(response.body))
     end
 
     def http
       @http ||= begin
-        uri = URI(ROOT)
-        Net::HTTP.new(uri.host, uri.port).tap do |http|
+        Net::HTTP.new(ROOT.host, ROOT.port).tap do |http|
           http.use_ssl = true
         end
       end
@@ -97,6 +77,14 @@ module CodeshipApi
         "Accept" => "application/json",
         "Authorization" => "Bearer #{token}"
       }
+    end
+
+    def parsed_json_from(response)
+      if response.body.length > 0
+        JSON.parse(response.body)
+      else
+        nil
+      end
     end
   end
 end

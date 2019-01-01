@@ -1,23 +1,9 @@
 module CodeshipApi
-  class Organization
-    attr_reader :uuid, :name, :scopes
+  class Organization < Base
+    api_attrs :name, :scopes, :uuid
 
     def self.find_by(uuid)
-      cached_org = CodeshipApi.organizations.detect {|org| org.uuid == uuid }
-      return cached_org if cached_org
-
-      org = CodeshipApi.get("/organizations/#{uuid}")["organization"]
-      new(
-        uuid: org['uuid'],
-        name: org['name'],
-        scopes: org['scopes']
-      )
-    end
-
-    def initialize(uuid:, name:, scopes:)
-      @uuid = uuid
-      @name = name
-      @scopes = scopes
+      CodeshipApi.organizations.detect {|org| org.uuid == uuid }
     end
 
     def uri

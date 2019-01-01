@@ -6,8 +6,8 @@ describe CodeshipApi::Authentication do
       @expires_at = Time.now
       @auth = CodeshipApi::Authentication.new(
         access_token: "blah",
-        expires_at: @expires_at,
-        organizations: []
+        expires_at: @expires_at.to_i,
+        organizations: [{"uuid" => "abc-123", "name" => "blah", "scopes" => []}]
       )
     end
 
