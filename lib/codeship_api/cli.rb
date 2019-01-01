@@ -1,6 +1,5 @@
 require "codeship_api"
 require "optionparser"
-require "pry"
 
 module CodeshipApi
   module Cli
@@ -25,6 +24,7 @@ module CodeshipApi
       end
 
       def console
+        require "pry"
         Pry.start(CodeshipApi)
       end
 
