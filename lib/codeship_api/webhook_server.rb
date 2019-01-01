@@ -8,8 +8,7 @@ module CodeshipApi
     include SuckerPunch::Job
 
     def perform(repo_url, ref)
-      org = Organization.find_by(ENV.fetch('CODESHIP_API_ORG_UUID'))
-      project = org.projects.detect {|proj| proj.repository_url == repo_url }
+      project = CodeshipApi.projects.detect {|proj| proj.repository_url == repo_url }
 
       if project
         builds_to_keep, *builds_to_stop = project.builds
