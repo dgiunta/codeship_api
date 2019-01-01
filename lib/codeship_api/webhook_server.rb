@@ -1,8 +1,6 @@
 require 'codeship_api'
 require 'sinatra/base'
 require 'sucker_punch'
-require 'pry'
-
 module CodeshipApi
   class ProcessWebhookJob
     include SuckerPunch::Job
