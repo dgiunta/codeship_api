@@ -6,7 +6,7 @@ module CodeshipApi
 
     parsed_time_attrs :queued_at, :allocated_at, :finished_at
 
-    STATES = %w[testing error success stopped].each do |state|
+    STATES = %w[waiting testing error success stopped].each do |state|
       define_method("#{state}?") do
         status == state
       end

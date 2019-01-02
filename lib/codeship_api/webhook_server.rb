@@ -12,7 +12,7 @@ module CodeshipApi
 
       if project
         build_to_keep, *builds_to_stop = project.builds
-          .select {|build| build.testing? && build.ref == ref }
+          .select {|build| (build.testing? || build.waiting?) && build.ref == ref }
           .sort_by(&:queued_at)
           .reverse
 
