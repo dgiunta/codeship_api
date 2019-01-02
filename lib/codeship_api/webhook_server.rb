@@ -6,8 +6,6 @@ module CodeshipApi
     include SuckerPunch::Job
 
     def perform(repo_url, ref, commit_sha)
-      sleep 10
-
       project = CodeshipApi.projects.detect {|proj| proj.repository_url == repo_url }
 
       if project
@@ -21,6 +19,7 @@ module CodeshipApi
 
         puts "project: #{project.name}"
         puts "builds_to_stop: #{builds_to_stop.map(&:uuid).join(", ")}"
+
         builds_to_stop.each(&:stop)
       end
     end
