@@ -40,7 +40,7 @@ module CodeshipApi
 
       ref = data['ref'].sub(/^refs\//, '')
       repo_url = data['repository']['html_url']
-      commit_sha = data['head']
+      commit_sha = data['head_commit']['id']
 
       ProcessWebhookJob.perform_async(repo_url, ref, commit_sha)
 
