@@ -14,7 +14,7 @@ module CodeshipApi
           .select do |build|
             (build.testing? || build.waiting?) &&
               build.ref == ref &&
-              build.commit_sha != commit_sha
+              build.commit_sha.first(10) != commit_sha.first(10)
           end
 
         puts "project: #{project.name}"
