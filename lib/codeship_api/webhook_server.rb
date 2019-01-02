@@ -5,19 +5,21 @@ module CodeshipApi
   class ProcessWebhookJob
     include SuckerPunch::Job
 
-    def perform(repo_url, ref)
+    def perform(repo_url, ref, commit_sha)
       sleep 10
 
       project = CodeshipApi.projects.detect {|proj| proj.repository_url == repo_url }
 
       if project
-        build_to_keep, *builds_to_stop = project.builds
-          .select {|build| (build.testing? || build.waiting?) && build.ref == ref }
-          .sort_by(&:queued_at)
-          .reverse
+        builds_to_stop = project
+          .builds
+          .select do |build|
+            (build.testing? || build.waiting?) &&
+              build.ref == ref &&
+              build.commit_sha != commit_sha
+          end
 
         puts "project: #{project.name}"
-        puts "build_to_keep: #{build_to_keep.uuid}"
         puts "builds_to_stop: #{builds_to_stop.map(&:uuid).join(", ")}"
         builds_to_stop.each(&:stop)
       end
@@ -39,8 +41,9 @@ module CodeshipApi
 
       ref = data['ref'].sub(/^refs\//, '')
       repo_url = data['repository']['html_url']
+      commit_sha = data['head']
 
-      ProcessWebhookJob.perform_async(repo_url, ref)
+      ProcessWebhookJob.perform_async(repo_url, ref, commit_sha)
 
       [201, {'Content-Type' => 'application/json'}, {'status': 'OK'}.to_json]
     end
