@@ -5,23 +5,43 @@ module CodeshipApi
   class ProcessWebhookJob
     include SuckerPunch::Job
 
+    attr_reader :repo_url, :ref, :commit_sha
+
     def perform(repo_url, ref, commit_sha)
-      project = CodeshipApi.projects.detect {|proj| proj.repository_url == repo_url }
+      @repo_url, @ref, @commit_sha = repo_url, ref, commit_sha
+
+      start = Time.now
+      log :start
 
       if project
-        builds_to_stop = project
-          .builds
-          .select do |build|
-            (build.testing? || build.waiting?) &&
-              build.ref == ref &&
-              build.commit_sha[0..10] != commit_sha[0..10]
-          end
-
-        puts "project: #{project.name}"
-        puts "builds_to_stop: #{builds_to_stop.map(&:uuid).join(", ")}"
-
+        log "project=#{project.name} builds_to_stop=#{builds_to_stop.map(&:uuid).join(",")}"
         builds_to_stop.each(&:stop)
       end
+      log "end (#{Time.now - start})"
+    end
+
+    private
+
+    def project
+      @project ||= CodeshipApi.projects.detect {|proj| proj.repository_url == repo_url }
+    end
+
+    def builds_to_stop
+      @builds_to_stop ||= project
+        .builds
+        .select do |build|
+        (build.testing? || build.waiting?) &&
+          build.ref == ref &&
+          build.commit_sha[0..10] != commit_sha[0..10]
+      end
+    end
+
+    def log(message="")
+      puts [log_prefix, message].join(": ")
+    end
+
+    def log_prefix
+      "[ProcessWebhookJob#perform repo_url=#{repo_url} ref=#{ref} commit_sha=#{commit_sha}]"
     end
   end
 
