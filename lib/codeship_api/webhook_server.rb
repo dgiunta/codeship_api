@@ -10,6 +10,11 @@ module CodeshipApi
     def perform(repo_url, ref, commit_sha)
       @repo_url, @ref, @commit_sha = repo_url, ref, commit_sha
 
+      if ignore_master?
+        log "project=#{project.name} commit_sha=#{commit_sha} IGNORING MASTER COMMIT"
+        return
+      end
+
       start = Time.now
       log :start
 
@@ -22,18 +27,16 @@ module CodeshipApi
 
     private
 
+    def ignore_master?
+      ENV['IGNORE_MASTER'].to_b && ref =~ /^heads\/master$/
+    end
+
     def project
       @project ||= CodeshipApi.projects.detect {|proj| proj.repository_url == repo_url }
     end
 
     def builds_to_stop
-      @builds_to_stop ||= project
-        .builds
-        .select do |build|
-        (build.testing? || build.waiting?) &&
-          build.ref == ref &&
-          build.commit_sha[0..10] != commit_sha[0..10]
-      end
+      @builds_to_stop ||= project.builds.select(&method(:excessive_build?))
     end
 
     def log(message="")
@@ -42,6 +45,12 @@ module CodeshipApi
 
     def log_prefix
       "[ProcessWebhookJob#perform repo_url=#{repo_url} ref=#{ref} commit_sha=#{commit_sha}]"
+    end
+
+    def excessive_build?(build)
+      (build.testing? || build.waiting?) &&
+        build.ref == ref &&
+        build.commit_sha[0..10] != commit_sha[0..10]
     end
   end
 
