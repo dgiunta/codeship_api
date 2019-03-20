@@ -27,13 +27,6 @@ module CodeshipApi
         require "pry"
         Pry.start(CodeshipApi)
       end
-
-      def webhook_server(*args)
-        require 'codeship_api/webhook_server'
-
-        params = Rack::Server::Options.new.parse!(args)
-        Rack::Server.start(params.merge(app: CodeshipApi::WebhookServer))
-      end
     end
   end
 end
