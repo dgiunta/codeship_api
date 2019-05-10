@@ -30,7 +30,7 @@ module CodeshipApi
     end
 
     def stop
-      CodeshipApi.client.post(uri + "/stop") if testing?
+      CodeshipApi.client.post(uri + "/stop") if waiting? || testing?
     end
   end
 end
