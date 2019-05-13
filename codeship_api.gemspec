@@ -33,8 +33,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "activesupport"
-  spec.add_dependency "sinatra"
-  spec.add_dependency "sucker_punch"
   spec.add_dependency "pry"
 
   spec.add_development_dependency "bundler", "~> 1.17"
