@@ -6,6 +6,7 @@ require "codeship_api/base"
 require "codeship_api/organization"
 require "codeship_api/project"
 require "codeship_api/build"
+require "codeship_api/pipeline"
 require "codeship_api/authentication"
 require "codeship_api/client"
 

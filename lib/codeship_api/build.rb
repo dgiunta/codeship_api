@@ -25,12 +25,24 @@ module CodeshipApi
       @project ||= Project.find_by(organization_uuid, project_uuid)
     end
 
+    def pipelines
+      @pipelines ||= Pipeline.find_all_by_build(self)
+    end
+
     def uri
       @uri ||= "#{project.uri}/builds/#{uuid}"
     end
 
     def stop
       CodeshipApi.client.post(uri + "/stop") if waiting? || testing?
+    end
+
+    def duration
+      duration_in_seconds / 60
+    end
+
+    def duration_in_seconds
+      (finished_at || Time.now) - (allocated_at || queued_at)
     end
   end
 end

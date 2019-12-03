@@ -18,6 +18,14 @@ module CodeshipApi
       end
     end
 
+    def self.integer_attrs(*attrs)
+      attrs.each do |attr|
+        define_method("#{attr}=") do |value|
+          instance_variable_set("@#{attr}", value.to_i) if value
+        end
+      end
+    end
+
     parsed_time_attrs :created_at, :updated_at
 
     def initialize(attrs={})
