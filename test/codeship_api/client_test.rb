@@ -3,8 +3,8 @@ require 'test_helper'
 describe CodeshipApi::Client do
   before do
     @client = CodeshipApi::Client.new
-    @fake_success_response = Struct.new(:body).new('{"status": "OK"}')
-    @fake_null_response = Struct.new(:body).new('')
+    @fake_success_response = Struct.new(:code, :body).new("200", '{"status": "OK"}')
+    @fake_null_response = Struct.new(:code, :body).new("200", '')
     @mock_http = Minitest::Mock.new
 
     def @client.token
@@ -18,7 +18,7 @@ describe CodeshipApi::Client do
       expires_at = Time.now + (10 * 60 * 60) # 10 minutes from now
       org = {uuid: "asdf-asdf-asdf-asdf", name: "fake_org", scopes: []}
 
-      auth_response = Struct.new(:body).new({
+      auth_response = Struct.new(:code, :body).new("200", {
         access_token: token,
         expires_at: expires_at.to_i,
         organizations: [org]

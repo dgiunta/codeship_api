@@ -12,6 +12,25 @@ module CodeshipApi
       end
     end
 
+    def self.find_all_by_project(
+      project,
+      page: 1, builds: [],
+      filter_by: -> (build) { true },
+      stop_when: -> (new_builds) { new_builds.empty? }
+    )
+      new_builds = find_by_project(project, page: page)
+      builds += new_builds.select(&filter_by)
+
+      if stop_when.call(new_builds)
+        builds
+      else
+        find_all_by_project(
+          project, page: page + 1, builds: builds,
+          stop_when: stop_when, filter_by: filter_by
+        )
+      end
+    end
+
     def self.find_by_project(project, per_page: 50, page: 1)
       uri = "#{project.uri}/builds?per_page=#{per_page}&page=#{page}"
       CodeshipApi.client.get(uri)["builds"].map {|build| new(build) }

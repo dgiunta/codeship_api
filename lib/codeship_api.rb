@@ -13,8 +13,8 @@ require "codeship_api/client"
 module CodeshipApi
   ROOT = URI('https://api.codeship.com/v2/')
 
-  USERNAME = ENV.fetch('CODESHIP_API_USERNAME')
-  PASSWORD = ENV.fetch('CODESHIP_API_PASSWORD')
+  USERNAME = ENV.fetch('CODESHIP_API_USERNAME', nil)
+  PASSWORD = ENV.fetch('CODESHIP_API_PASSWORD', nil)
 
   class << self
     def client
