@@ -2,6 +2,7 @@ require "active_support/time"
 require "net/http"
 require "json"
 require "codeship_api/version"
+require 'codeship_api/configuration'
 require "codeship_api/base"
 require "codeship_api/organization"
 require "codeship_api/project"
@@ -13,12 +14,21 @@ require "codeship_api/client"
 module CodeshipApi
   ROOT = URI('https://api.codeship.com/v2/')
 
-  USERNAME = ENV.fetch('CODESHIP_API_USERNAME', nil)
-  PASSWORD = ENV.fetch('CODESHIP_API_PASSWORD', nil)
-
   class << self
+    def configure(&block)
+      configuration.instance_eval(&block)
+    end
+
+    def configuration
+      @configuration ||= Configuration.new
+    end
+
+    def client=(client)
+      @client = client
+    end
+
     def client
-      @client ||= Client.new(USERNAME, PASSWORD)
+      @client ||= Client.new(configuration.username, configuration.password)
     end
     delegate :organizations, :projects, to: :client
 
