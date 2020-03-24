@@ -16,17 +16,22 @@ module CodeshipApi
       project,
       page: 1, builds: [],
       filter_by: -> (build) { true },
-      stop_when: -> (new_builds) { new_builds.empty? }
+      stop_when: -> (new_builds, page) { new_builds.empty? },
+      &block
     )
       new_builds = find_by_project(project, page: page)
-      builds += new_builds.select(&filter_by)
+      new_filtered_builds = new_builds.select(&filter_by)
 
-      if stop_when.call(new_builds)
+      builds += new_filtered_builds
+      block.call(new_filtered_builds, page) if block
+
+      if stop_when.call(new_builds, page)
         builds
       else
         find_all_by_project(
           project, page: page + 1, builds: builds,
-          stop_when: stop_when, filter_by: filter_by
+          stop_when: stop_when, filter_by: filter_by,
+          &block
         )
       end
     end
